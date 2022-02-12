@@ -29,7 +29,7 @@ exports.loginUser = async (req, res) => {
           if (same) {
             // 1) Which user loogen in
             req.session.userId = user._id;
-            res.status(200).redirect("/");
+            res.status(200).redirect("/users/dashboard");
           }
         });
       }
@@ -45,5 +45,14 @@ exports.loginUser = async (req, res) => {
 exports.logoutUser = (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
+  });
+};
+
+exports.getDashboard = async (req, res) => {
+  const user = await User.findById(req.session.userId);
+
+  res.status(200).render("dashboard", {
+    pageName: "dashboard",
+    user,
   });
 };
