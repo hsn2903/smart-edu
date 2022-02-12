@@ -25,12 +25,11 @@ exports.loginUser = async (req, res) => {
 
     await User.findOne({ email: email }, (err, user) => {
       if (user) {
-        console.log(password);
-        console.log(user);
         bcrypt.compare(password, user.password, (err, same) => {
           if (same) {
-            // User Session
-            res.status(200).send("LOGGED IN");
+            // 1) Which user loogen in
+            req.session.userId = user._id;
+            res.status(200).redirect("/");
           }
         });
       }
@@ -41,4 +40,10 @@ exports.loginUser = async (req, res) => {
       message: error,
     });
   }
+};
+
+exports.logoutUser = (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
 };
