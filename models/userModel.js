@@ -17,6 +17,11 @@ const userSchema = mongoose.Schema({
     required: [true, "A user must have a password!"],
     unique: true,
   },
+  role: {
+    type: String,
+    enum: ["student", "teacher", "admin"],
+    default: "student",
+  },
 });
 
 // kullanıcı şifresini db de açık bir şekilde görünmemesi için kripte ediyoruz

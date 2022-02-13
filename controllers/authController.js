@@ -1,16 +1,12 @@
-const User = require("./../models/userModel");
 const bcrypt = require("bcrypt");
+const User = require("./../models/userModel");
+const Category = require("./../models/categoryModel");
 
 exports.createUser = async (req, res) => {
   try {
     const newUser = await User.create(req.body);
 
-    res.status(201).json({
-      status: "success",
-      data: {
-        user: newUser,
-      },
-    });
+    res.status(201).redirect("/login");
   } catch (error) {
     res.status(400).json({
       status: "fail",
@@ -50,9 +46,10 @@ exports.logoutUser = (req, res) => {
 
 exports.getDashboard = async (req, res) => {
   const user = await User.findById(req.session.userId);
-
+  const categories = await Category.find();
   res.status(200).render("dashboard", {
     pageName: "dashboard",
     user,
+    categories,
   });
 };
