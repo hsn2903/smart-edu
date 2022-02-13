@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("./../models/userModel");
 const Category = require("./../models/categoryModel");
+const Course = require("../models/courseModel");
 
 exports.createUser = async (req, res) => {
   try {
@@ -22,11 +23,9 @@ exports.loginUser = async (req, res) => {
     await User.findOne({ email: email }, (err, user) => {
       if (user) {
         bcrypt.compare(password, user.password, (err, same) => {
-          if (same) {
-            // 1) Which user loogen in
-            req.session.userId = user._id;
-            res.status(200).redirect("/users/dashboard");
-          }
+          // 1) Which user loogen in
+          req.session.userId = user._id;
+          res.status(200).redirect("/users/dashboard");
         });
       }
     }).clone(); // Yeni versiyon için clone gerekli
@@ -45,11 +44,13 @@ exports.logoutUser = (req, res) => {
 };
 
 exports.getDashboard = async (req, res) => {
-  const user = await User.findById(req.session.userId);
+  const user = await User.findById(req.session.userId).populate("courses");
   const categories = await Category.find();
+  const courses = await Course.find({ user: req.session.userId });
   res.status(200).render("dashboard", {
     pageName: "dashboard",
     user,
     categories,
+    courses,
   });
 };
